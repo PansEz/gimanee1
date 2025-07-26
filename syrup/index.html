@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>GIMANEE Chatbot</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Tailwind CSS CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    body { background: #000; color: #fff; margin: 0; }
+    .main-content { position: relative; z-index: 1; }
+    .gimanee-btn {
+      background: #6826c3;
+      color: #fff;
+      padding-left: 2.5rem;
+      padding-right: 2.5rem;
+      padding-top: 0.9rem;
+      padding-bottom: 0.9rem;
+      border-radius: 1.5rem;
+      font-size: 1.1rem;
+      font-weight: 400;
+      box-shadow: 0 2px 10px 0 rgba(80,40,120,0.20);
+      transition: background 0.2s, box-shadow 0.2s, transform 0.07s;
+      outline: none;
+    }
+    .gimanee-btn:hover, .gimanee-btn:focus {
+      background: #5020a6;
+      box-shadow: 0 4px 16px 0 rgba(80,40,120,0.28);
+      transform: translateY(-2px) scale(1.04);
+    }
+    .custom-purple-shadow {
+      box-shadow:
+        0 6px 32px 0 rgba(80,40,120,0.18),
+        0 24px 60px 0 #6826c390;
+      transition: box-shadow 0.5s cubic-bezier(.4,2,.5,1), transform 0.5s cubic-bezier(.4,2,.5,1);
+    }
+    .custom-purple-shadow-hover {
+      box-shadow:
+        0 12px 40px 0 #6826c3c0,
+        0 4px 20px 0 rgba(80,40,120,0.18);
+      transform: translateY(-4px) scale(1.01);
+    }
+    /* CHATBOT DARK MODE */
+    .message { display: flex; margin: 12px 0; align-items: flex-end; }
+    .user { justify-content: flex-end; }
+    .user .bubble { background: #282c37; color: #e0e7ef; border-radius: 22px 22px 6px 22px; }
+    .bot { justify-content: flex-start; }
+    .bot .bubble { background: #373f52; color: #b399fa; border-radius: 22px 22px 22px 6px; }
+    .avatar {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      margin: 0 8px;
+      object-fit: cover;
+      box-shadow: 0 2px 6px #0003;
+      background: #fff;
+    }
+    .bubble {
+      max-width: 70%;
+      padding: 10px 16px;
+      font-size: 16px;
+      min-width: 60px;
+      word-break: break-word;
+      box-shadow: 0 1px 8px #0002;
+    }
+    #chatbox {
+      flex: 1 1 0;
+      overflow-y: auto;
+      background-color: #181f2a;
+      border-radius: 1rem;
+      padding: 18px 14px;
+      margin-bottom: 1rem;
+      margin-top: 0.01rem;
+      min-height: 300px;
+      max-height: 420px;
+      scroll-behavior: smooth;
+      border: 1px solid #232a36;
+    }
+    #inputArea {
+      display: flex;
+      margin-top: 0.5rem;
+      background: transparent;
+      border: none;
+      box-shadow: none;
+    }
+    #userInput {
+      flex: 1;
+      padding: 10px;
+      font-size: 15px;
+      border-radius: 8px;
+      border: 1px solid #282b36;
+      background: #232a36;
+      color: #eee;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    #userInput:focus {
+      border-color: #a78bfa;
+      box-shadow: 0 0 2px #a78bfa;
+      background: #282c37;
+      color: #fff;
+    }
+    #sendBtn {
+      padding: 10px 18px;
+      margin-left: 10px;
+      background: #6826c3;
+      color: #fff;
+      font-weight: 500;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.2s, box-shadow 0.2s;
+    }
+    #sendBtn:hover {
+      background: #5020a6;
+      box-shadow: 0 2px 8px #a259e680;
+    }
+  </style>
+</head>
+<body class="bg-black text-gray-200 min-h-screen">
+  <!-- Top Bar -->
+  <div class="fixed top-0 left-0 w-full flex items-center justify-between px-6 h-16 z-50">
+    <div class="text-xl font-bold tracking-widest text-gray-100 select-none">GIMANEE</div>
+    <button class="gimanee-btn">Help</button>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content flex flex-col items-center justify-center min-h-screen pt-20">
+    <h1 class="text-white text-center font-bold mb-12" style="font-size:clamp(2.3rem,7vw,4.5rem); line-height:1.13;">
+      Take care of your body<br>
+      It's the only place you have to live
+    </h1>
+    <!-- กรอบหลัก (แชทบอท) -->
+    <div
+      class="bg-gray-900 rounded-2xl relative custom-purple-shadow transition-all duration-500 cursor-pointer flex flex-col justify-center space-y-3 text-lg"
+      style="width: 100%; max-width: 870px; min-width: 280px; height: 500px; min-height: 320px; padding: 2.5rem 2.5rem;"
+      onmouseover="this.classList.add('custom-purple-shadow-hover')"
+      onmouseout="this.classList.remove('custom-purple-shadow-hover')"
+    >
+      <!-- Chatbot UI -->
+      <div class="flex items-center gap-2 mb-3 mb-12">
+        <span class="text-lg font-bold text-purple-200">ASK GIMANEE</span>
+      </div>
+      <div id="chatbox"></div>
+      <form id="inputArea" class="w-full" autocomplete="off" onsubmit="return false;">
+        <input type="text" id="userInput" placeholder="พิมพ์คำถามของคุณ..." autocomplete="off" />
+        <button id="sendBtn" type="submit">ส่ง</button>
+      </form>
+    </div>
+  </div>
+  <!-- Chatbot JS -->
+  <script>
+    const chatbox = document.getElementById("chatbox");
+    function appendMessage(sender, text) {
+      const message = document.createElement("div");
+      message.classList.add("message", sender);
+      const avatar = document.createElement("img");
+      avatar.className = "avatar";
+      avatar.src = sender === "bot"
+        ? "https://cdn-icons-png.flaticon.com/512/3784/3784184.png"
+        : "https://cdn-icons-png.flaticon.com/512/3177/3177440.png";
+      const bubble = document.createElement("div");
+      bubble.className = "bubble";
+      bubble.innerText = text;
+      if (sender === "bot") {
+        message.appendChild(avatar);
+        message.appendChild(bubble);
+      } else {
+        message.appendChild(bubble);
+        message.appendChild(avatar);
+      }
+      chatbox.appendChild(message);
+      chatbox.scrollTop = chatbox.scrollHeight;
+    }
+    // welcome
+    appendMessage("bot", "สวัสดีค่ะ ฉันคือหมอใจมณี มีอะไรให้ช่วยไหมคะ?");
+    // send message
+    async function sendMessage() {
+      const input = document.getElementById("userInput");
+      const userMessage = input.value.trim();
+      if (!userMessage) return;
+      appendMessage("user", userMessage);
+      input.value = "";
+      try {
+        const response = await fetch("http://127.0.0.1:5000/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: userMessage }),
+        });
+        const data = await response.json();
+        appendMessage("bot", data.response);
+      } catch (error) {
+        appendMessage("bot", "ขออภัยค่ะ มีข้อผิดพลาดในการเชื่อมต่อกับระบบ");
+        console.error(error);
+      }
+    }
+    document.getElementById("inputArea").addEventListener("submit", function (e) {
+      e.preventDefault();
+      sendMessage();
+    });
+    document.getElementById("userInput").addEventListener("keydown", function (event) {
+      if (event.key === "Enter") sendMessage();
+    });
+  </script>
+</body>
+</html>

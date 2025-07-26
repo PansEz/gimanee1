@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+  <title>GIMANEE</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Tailwind CSS CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="icon" href="logo_withoutname2_rmbg.png" type="image/x-icon">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      padding: 0;
+      margin: 0;
+      scroll-behavior: smooth;
+    }
+
+    .page-content {
+      transition: filter 0.3s ease;
+    }
+
+    .popup-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      backdrop-filter: blur(6px);
+      background: rgba(0, 0, 0, 0.3);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .popup-overlay.show {
+      display: flex;
+    }
+
+    .popup-box {
+      background: rgba(0, 0, 0, 0.658);
+      border: 5px solid;
+      border-image: linear-gradient(0deg, rgb(255, 255, 255), rgba(255, 255, 255, 0.2)) 1;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      width: 900px;
+      height: 600px;
+    }
+
+    .popup-box p,
+    .popup-box h2 {
+      color: rgb(255, 255, 255);
+    }
+
+    .popup-box p {
+      text-align: left;
+    }
+
+    .input_bmi {
+      color: black;
+      border: none;
+      border-radius: 20px;
+    }
+
+    .container {
+      text-align: center;
+    }
+
+    .container input {
+      text-decoration-line: none;
+      border-radius: 20px;
+      padding: 10px 30px;
+      background-color: rgba(255, 255, 255, 0.337);
+      color: black;
+      position: relative;
+      top: 2rem;
+      left: 35%;
+      margin-bottom: 5%;
+    }
+
+    .container button {
+      color: rgb(255, 255, 255);
+      display: block;
+      position: relative;
+      top: 2rem;
+      left: 37%;
+    }
+
+    .container ::placeholder {
+      color: #ffffffc7;
+    }
+
+    #output {
+      margin-top: 15px;
+      font-size: 1.1em;
+      font-weight: bold;
+      color: rgb(255, 255, 255);
+    }
+
+    body {
+      background: #000;
+      color: #fff;
+      margin: 0;
+    }
+
+    #bg-particle {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .main-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .gimanee-btn {
+      background: #6826c3;
+      color: #fff;
+      padding-left: 2.5rem;
+      padding-right: 2.5rem;
+      padding-top: 0.9rem;
+      padding-bottom: 0.9rem;
+      border-radius: 1.5rem;
+      font-size: 1.1rem;
+      font-weight: 400;
+      box-shadow: 0 2px 10px 0 rgba(80, 40, 120, 0.20);
+      transition: background 0.2s, box-shadow 0.2s, transform 0.07s;
+      outline: none;
+      top: 1rem;
+      position: relative;
+    }
+
+    .gimanee-btn:hover,
+    .gimanee-btn:focus {
+      background: #5020a6;
+      box-shadow: 0 4px 16px 0 rgba(80, 40, 120, 0.28);
+      transform: translateY(-2px) scale(1.04);
+    }
+
+    .fancy-shadow {
+      text-shadow: 0 4px 24px rgba(80, 40, 120, 0.30), 0 2px 6px rgba(0, 0, 0, 0.65);
+    }
+
+    .custom-purple-shadow {
+      box-shadow:
+        0 6px 32px 0 rgba(80, 40, 120, 0.18),
+        0 24px 60px 0 #6826c390;
+      transition: box-shadow 0.5s cubic-bezier(.4, 2, .5, 1), transform 0.5s cubic-bezier(.4, 2, .5, 1);
+    }
+
+    .custom-purple-shadow-hover {
+      box-shadow:
+        0 12px 40px 0 #6826c3c0,
+        0 4px 20px 0 rgba(80, 40, 120, 0.18);
+      transform: translateY(-4px) scale(1.01);
+    }
+  </style>
+
+  <script>
+    function openPopup(popupId) {
+      document.getElementById(popupId).classList.add('show');
+      document.getElementById('content').style.filter = 'blur(5px)';
+    }
+
+    function closePopup(popupId) {
+      document.getElementById(popupId).classList.remove('show');
+      document.getElementById('content').style.filter = 'none';
+    }
+  </script>
+</head>
+
+<body class="bg-black text-gray-200 min-h-screen">
+
+  <!-- BMI -->
+  <script>
+    function calculateBMI() {
+      const weight = parseFloat(document.getElementById("weight").value);
+      const heightCm = parseFloat(document.getElementById("height").value);
+
+      if (!weight || !heightCm || weight <= 0 || heightCm <= 0) {
+        document.getElementById("output").innerText = "Please enter valid numbers.";
+        return;
+      }
+
+      const heightM = heightCm / 100;
+      const bmi = (weight / (heightM * heightM)).toFixed(2);
+
+      let category = "";
+      if (bmi < 18.5) category = "Underweight";
+      else if (bmi < 24.9) category = "Normal weight";
+      else if (bmi < 29.9) category = "Overweight";
+      else category = "Obese";
+
+      document.getElementById("output").innerText = `Your BMI is ${bmi} (${category})`;
+    }
+  </script>
+
+  <!-- Canvas Particle BG -->
+  <canvas id="bg-particle"></canvas>
+
+  <!-- Top Bar (Add transition, id="topbar") -->
+  <div id="topbar"
+    class="fixed top-0 left-0 w-full flex items-center justify-between px-6 h-16 z-50 transition-opacity duration-500 opacity-100">
+    <a class="text-xl font-bold tracking-widest text-gray-100 select-none" onclick="location.reload()" style="cursor: pointer;">GIMANEE</a>
+    <a href="#" style="position: relative; right:  30rem;" onclick="openPopup('pophelp')">Contact Us</a>
+    <a class="gimanee-btn" href="#healthcare_education_page">Healthcare Education</a>
+  </div>
+
+  <div class="popup-overlay" id="pophelp">
+    <div class="popup-box">
+      <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Contact Us</h2>
+      <p>38835@satreephuket.ac.th</p>
+      <p>38839@satreephuket.ac.th</p>
+      <p>41093@satreephuket.ac.th</p>
+      <button onclick="closePopup('pophelp')" style="left: 85%; top: -4%; background-color: red; color: white; border-radius: 20px; padding: 5px 30px; position: relative;">Close</button>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content flex flex-col items-center justify-center min-h-screen pt-20">
+    <h1 class="text-white text-center font-extrabold fancy-shadow mb-12"
+      style="font-size:clamp(2.3rem,7vw,4.5rem); line-height:1.13;">
+      Take care of your body.<br>
+      It's the only place you have to live.
+    </h1>
+
+    <div
+      class="bg-gray-900 rounded-2xl relative custom-purple-shadow transition-all duration-500 cursor-pointer flex flex-col justify-center space-y-6 text-lg"
+      style="width: 100%; max-width: 870px; min-width: 280px; height: 500px; min-height: 300px; padding: 2.5rem 2.5rem;">
+      <div
+  class="bg-gray-900 rounded-2xl relative custom-purple-shadow transition-all duration-500 cursor-pointer flex flex-col justify-center space-y-6 text-lg"
+  style="width: 100%; max-width: 870px; min-width: 280px; height: 500px; min-height: 300px; padding: 2.5rem 2.5rem;"
+  onmouseover="this.classList.add('custom-purple-shadow-hover')"
+  onmouseout="this.classList.remove('custom-purple-shadow-hover')">
+</div>
+
+    </div>
+
+    <!-- Health Card Grid -->
+    <div class="w-full flex flex-col items-center justify-center py-10" id="healthcare_education_page">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-x-12 gap-y-12 mt-96">
+
+        <!-- Card 1 -->
+        <div class="bg-white/10 backdrop-blur-lg rounded-2xl border-2 border-black/50 flex flex-col items-center py-6 px-3 min-w-[180px] min-h-[260px] relative shadow-xl hover:scale-105 hover:shadow-2xl transition-all duration-300">
+          <div class="text-2xl md:text-3xl font-semibold text-white mb-1">Ifuenza</div>
+          <img src="cold_img.png" alt="Ifuenza" class="h-20 mb-5 mt-2 opacity-80">
+          <div class="page-content" id="content">
+            <button onclick="openPopup('popup1')">Details</button>
+          </div>
+          <div class="popup-overlay" id="popup1">
+            <div class="popup-box">
+              <div class="popup_1_content" style="text-align: left; ">
+                <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">ไข้หวัดใหญ่</h2>
+                <h3 class="text-xl font-semibold mt-4">สาเหตุ</h3>
+                <ul class="list-disc list-inside ml-4 text-white text-base">
+                  <li>เกิดจากไวรัสไข้หวัดใหญ่ชนิด A, B ซึ่งเปลี่ยนสายพันธุ์ได้ทุกปี</li>
+                </ul>
+                <h3 class="text-xl font-semibold mt-4">อาการสำคัญ</h3>
+                <ul class="list-disc list-inside ml-4 text-white text-base">
+                  <li>ไข้สูงเฉียบพลัน</li>
+                  <li>ปวดศีรษะ ปวดกล้ามเนื้อ ปวดหลัง</li>
+                  <li>ไอแห้ง เจ็บคอ</li>
+                  <li>อ่อนเพลียมาก บางรายคลื่นไส้อาเจียน</li>
+                </ul>
+                <h3 class="text-xl font-semibold mt-4">การติดต่อ</h3>
+                <ul class="list-disc list-inside ml-4 text-white text-base">
+                  <li>ผ่านละอองฝอยจากการไอหรือจามของผู้ป่วย หรือการสัมผัสสิ่งของที่ปนเปื้อนเชื้อ</li>
+                </ul>
+                <h3 class="text-xl font-semibold mt-4">การป้องกัน</h3>
+                <ul class="list-disc list-inside ml-4 text-white text-base">
+                  <li>ฉีดวัคซีนไข้หวัดใหญ่ปีละ 1 ครั้ง</li>
+                  <li>ล้างมือบ่อย ๆ สวมหน้ากากเมื่ออยู่ในที่แออัด</li>
+                  <li>หลีกเลี่ยงใกล้ชิดผู้ป่วย</li>
+                </ul>
+                <h3 class="text-xl font-semibold mt-4">การรักษา</h3>
+                <ul class="list-disc list-inside ml-4 text-white text-base">
+                  <li>พักผ่อน ดื่มน้ำมาก ๆ</li>
+                  <li>ใช้ยาลดไข้ตามอาการ</li>
+                </ul>
+              </div>
+              <button onclick="closePopup('popup1')" style="left: 85%; top: -4%; background-color: red; color: white; border-radius: 20px; padding: 5px 30px; position: relative;">Close</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="bg-white/10 backdrop-blur-lg rounded-2xl border-2 border-black/50 flex flex-col items-center py-6 px-3 min-w-[180px] min-h-[260px] relative shadow-xl hover:scale-105 hover:shadow-2xl transition-all duration-300">
+          <div class="text-2xl md:text-3xl font-semibold text-white mb-1">Covid-19</div>
+          <img src="covid19_img.png" alt="Covid-19" class="h-20 mb-5 mt-2 opacity-80">
+          <div class="page-content" id="content">
+            <button onclick="openPopup('popup_2')">Details</button>
+          </div>
+          <div class="popup-overlay" id="popup_2">
+            <div class="popup-box">
+              <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">โควิด-19</h2>
+              <div class="popup_2_content">
+                <h3 class="text-xl font-semibold mt-4">สาเหตุ</h3>
+                <ul class="list-disc list-inside ml-4 text-white text-base">
+                  <li>เกิดจากเชื้อไวรัส SARS-CoV-2 ในกลุ่มโคโรนาไวรัส</li>
+                </ul>
+                <h3 class="text-xl font-semibold mt-4">อาการที่พบได้บ่อย</h3>
+                <ul class="list-disc list-inside ml-4 text-white text-base">
+                  <li>มีไข้ ไอแห้ง เหนื่อยง่าย</li>
+                  <li>สูญเสียการรับกลิ่นหรือรส</li>
+                  <li>ปวดศีรษะ ปวดเมื่อยกล้ามเนื้อ</li>
+                  <li>ในบางรายอาจมีอาการทางระบบทางเดินอาหาร เช่น ท้องเสีย</li>
+                </ul>
+                <h3 class="text-xl font-semibold mt-4">การติดต่อ</h3>
+                <ul class="list-disc list-inside ml-4 text-white text-base">
+                  <li>จากการหายใจเอาละอองฝอย หรือสัมผัสสิ่งปนเปื้อนแล้วจับปาก จมูก ตา</li>
+                </ul>
+                <h3 class="text-xl font-semibold mt-4">การป้องกัน</h3>
+                <ul class="list-disc list-inside ml-4 text-white text-base">
+                  <li>ฉีดวัคซีนครบตามคำแนะนำ</li>
+                  <li>เว้นระยะห่าง สวมหน้ากาก หมั่นล้างมือ</li>
+                  <li>เลี่ยงสถานที่แออัด</li>
+                </ul>
+                <h3 class="text-xl font-semibold mt-4">การรักษา</h3>
+                <ul class="list-disc list-inside ml-4 text-white text-base">
+                  <li>แยกตัวเมื่อมีอาการหรือผลตรวจเป็นบวก</li>
+                  <li>รักษาตามอาการในรายที่ไม่รุนแรง</li>
+                </ul>
+              </div>
+              <button onclick="closePopup('popup_2')" style="left: 85%; top: -4%; background-color: red; color: white; border-radius: 20px; padding: 5px 30px; position: relative;">Close</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="bg-white/10 backdrop-blur-lg rounded-2xl border-2 border-black/50 flex flex-col items-center py-6 px-3 min-w-[180px] min-h-[260px] relative shadow-xl hover:scale-105 hover:shadow-2xl transition-all duration-300">
+          <div class="text-2xl md:text-3xl font-semibold text-white mb-1">Headache</div>
+          <img src="headache_img.png" alt="Headache" class="h-20 mb-5 mt-2 opacity-80">
+          <div class="page-content" id="content">
+            <button onclick="openPopup('popup_3')">Details</button>
+          </div>
+          <div class="popup-overlay" id="popup_3">
+            <div class="popup-box">
+              <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">อาการปวดหัว</h2>
+              <div class="popup_3_content">
+                <h3 class="text-xl font-semibold mt-4">สาเหตุทั่วไป</h3>
+                <ul class="list-disc list-inside ml-4 text-white text-base">
+                  <li>ความเครียด ความเหนื่อยล้า</li>
+                  <li>พักผ่อนไม่เพียงพอ</li>
+                  <li>ใช้สายตานานเกินไป</li>
+                  <li>ฮอร์โมน (โดยเฉพาะในผู้หญิง)</li>
+                </ul>
+                <h3 class="text-xl font-semibold mt-4">ประเภทที่พบบ่อย</h3>
+                <ul class="list-disc list-inside ml-4 text-white text-base">
+                  <li>ปวดหัวจากความเครียด (Tension headache): ปวดตื้อ ๆ รอบศีรษะ</li>
+                  <li>ไมเกรน (Migraine): ปวดตุบ ๆ ข้างเดียว คลื่นไส้ แพ้แสงหรือเสียง</li>
+                  <li>ปวดศีรษะคลัสเตอร์ (Cluster headache): ปวดรุนแรงเฉียบพลัน รอบดวงตา (พบน้อย)</li>
+                </ul>
+                <h3 class="text-xl font-semibold mt-4">การป้องกัน</h3>
+                <ul class="list-disc list-inside ml-4 text-white text-base">
+                  <li>พักผ่อนให้เพียงพอ</li>
+                  <li>หลีกเลี่ยงความเครียดและแสงจ้า</li>
+                  <li>ดื่มน้ำให้เพียงพอ</li>
+                </ul>
+                <h3 class="text-xl font-semibold mt-4">การรักษา</h3>
+                <ul class="list-disc list-inside ml-4 text-white text-base">
+                  <li>ยาพาราเซตามอลหรือไอบูโพรเฟน</li>
+                  <li>พักในที่มืด เงียบ เย็น</li>
+                  <li>หากอาการเรื้อรัง ควรพบแพทย์เพื่อหาสาเหตุ</li>
+                </ul>
+              </div>
+              <button onclick="closePopup('popup_3')" style="left: 85%; top: -4%; background-color: red; color: white; border-radius: 20px; padding: 5px 30px; position: relative;">Close</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 4 -->
+        <div class="bg-white/10 backdrop-blur-lg rounded-2xl border-2 border-black/50 flex flex-col items-center py-6 px-3 min-w-[180px] min-h-[260px] relative shadow-xl hover:scale-105 hover:shadow-2xl transition-all duration-300">
+          <div class="text-2xl md:text-3xl font-semibold text-white mb-1">Stomachache</div>
+          <img src="stomachahce_img.png" alt="Stomachache" class="h-20 mb-5 mt-2 opacity-80">
+          <div class="page-content" id="content">
+            <button onclick="openPopup('popup_4')">Details</button>
+          </div>
+          <div class="popup-overlay" id="popup_4">
+            <div class="popup-box">
+              <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">อาการปวดท้อง</h2>
+              <div class="popup_4_content">
+                <h3 class="text-xl font-semibold mt-4">สาเหตุทั่วไป</h3>
+                <ul class="list-disc list-inside ml-4 text-white text-base">
+                  <li>อาหารเป็นพิษ/อาหารไม่สะอาด</li>
+                  <li>กระเพาะอาหารอักเสบ</li>
+                  <li>กรดไหลย้อน</li>
+                  <li>ลำไส้อักเสบ</li>
+                  <li>เครียด หรือปัญหาทางอารมณ์</li>
+                </ul>
+                <h3 class="text-xl font-semibold mt-4">อาการที่ควรพบแพทย์</h3>
+                <ul class="list-disc list-inside ml-4 text-white text-base">
+                  <li>ปวดท้องรุนแรงทันทีทันใด</li>
+                  <li>ปวดและอาเจียนมาก</li>
+                  <li>ปวดร่วมกับตัวเหลือง ตาเหลือง</li>
+                  <li>ถ่ายดำ หรือมีเลือดออกทางทวาร</li>
+                </ul>
+                <h3 class="text-xl font-semibold mt-4">การป้องกัน</h3>
+                <ul class="list-disc list-inside ml-4 text-white text-base">
+                  <li>เลือกกินอาหารที่สะอาด สดใหม่</li>
+                  <li>ล้างมือก่อนกินอาหาร</li>
+                  <li>หลีกเลี่ยงของหมักดอง</li>
+                  <li>จัดการความเครียดให้ดี</li>
+                </ul>
+                <h3 class="text-xl font-semibold mt-4">การรักษา</h3>
+                <ul class="list-disc list-inside ml-4 text-white text-base">
+                  <li>พักผ่อน</li>
+                  <li>กินอาหารอ่อน ย่อยง่าย</li>
+                  <li>ถ้าอาเจียนมาก หรืออ่อนเพลียควรพบแพทย์</li>
+                </ul>
+              </div>
+              <button onclick="closePopup('popup_4')" style="left: 85%; top: -4%; background-color: red; color: white; border-radius: 20px; padding: 5px 30px; position: relative;">Close</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 5 -->
+        <div class="bg-white/10 backdrop-blur-lg rounded-2xl border-2 border-black/50 flex flex-col items-center py-6 px-3 min-w-[180px] min-h-[260px] relative shadow-xl hover:scale-105 hover:shadow-2xl transition-all duration-300">
+          <div class="text-2xl md:text-3xl font-semibold text-white mb-1">Sleeping</div>
+          <img src="sleeping_img.png" alt="Sleeping" class="h-20 mb-5 mt-2 opacity-80">
+          <div class="page-content" id="content">
+            <button onclick="openPopup('popup_5')">Details</button>
+          </div>
+          <div class="popup-overlay" id="popup_5">
+            <div class="popup-box">
+              <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">การนอนหลับ</h2>
+              <div class="popup_5_content">
+                <p>1. นอนและตื่นให้ตรงเวลาทุกวัน พยายามเข้านอนและตื่นให้ตรงเวลา แม้ในวันหยุด ช่วยให้ร่างกายตั้งนาฬิกาชีวิตได้ดีขึ้น</p><br>
+                <p>2. นอนให้เพียงพอ วัยเรียนควรนอนประมาณ 8-10 ชั่วโมงต่อคืน ถ้านอนไม่พอ อาจมีปัญหาด้านสมาธิ อารมณ์ และความจำ</p><br>
+                <p>3. หลีกเลี่ยงหน้าจอ (มือถือ/คอมฯ/ทีวี) อย่างน้อย 30 นาที-1 ชม. ก่อนนอน แสงสีฟ้าจากหน้าจอรบกวนการหลั่งเมลาโทนิน (ฮอร์โมนการนอน) ควรเปลี่ยนเป็นกิจกรรมผ่อนคลาย เช่น อ่านหนังสือเบา ๆ แทน</p><br>
+                <p>4. ผ่อนคลายก่อนนอน ฟังเพลงเบา ๆ, ฝึกหายใจลึก ๆ หรือทำสมาธิ ช่วยลดความเครียดและทำให้หลับได้ง่ายขึ้น</p><br>
+                <p>5. ออกกำลังกายเป็นประจำ (แต่ไม่ควรใกล้เวลานอน) การออกกำลังกายช่วยให้นอนหลับลึกขึ้น แต่ถ้าออกแรงมากก่อนนอนจะทำให้ร่างกายตื่นตัวเกินไป</p><br>
+                <p>6. หลีกเลี่ยงคาเฟอีนและน้ำตาลก่อนนอน เช่น กาแฟ ชา น้ำอัดลม หรือขนมหวาน เพราะจะทำให้หัวใจเต้นเร็ว หลับยาก</p><br>
+                <p>7. ทำห้องนอนให้น่านอน ปรับอุณหภูมิให้สบาย ไม่ร้อนหรือหนาวเกินไป ปิดไฟหรือใช้ไฟสลัว ๆ ลดเสียงรบกวน</p><br>
+                <p>8. ใช้เตียงสำหรับการนอนเท่านั้น หลีกเลี่ยงการทำการบ้าน เล่นมือถือ หรือกินข้าวบนเตียง เพื่อให้สมองจดจำว่าเตียงคือที่สำหรับการพักผ่อน</p><br>
+              </div>
+              <button onclick="closePopup('popup_5')" style="left: 85%; top: -4%rem; background-color: red; color: white; border-radius: 20px; padding: 5px 30px; position: relative;">Close</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 6 -->
+        <div class="bg-white/10 backdrop-blur-lg rounded-2xl border-2 border-black/50 flex flex-col items-center py-6 px-3 min-w-[180px] min-h-[260px] relative shadow-xl hover:scale-105 hover:shadow-2xl transition-all duration-300">
+          <div class="text-2xl md:text-3xl font-semibold text-white mb-1">Excercise</div>
+          <img src="exercise_img.png" alt="Excercise" class="h-20 mb-5 mt-2 opacity-80">
+          <div class="page-content" id="content">
+            <button onclick="openPopup('popup_6')">Details</button>
+          </div>
+          <div class="popup-overlay" id="popup_6">
+            <div class="popup-box">
+              <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">การออกกำลังกาย</h2>
+              <div class="popup_6_content">
+                <p>1. ควรออกกำลังกายอย่างน้อย 30 นาทีต่อวัน ออกกำลังกายอย่างน้อย 5 วันต่อสัปดาห์ เช่น เดินเร็ว วิ่งเหยาะ ๆ ปั่นจักรยาน หรือเต้นแอโรบิก</p><br>
+                <p>2. รวมกิจกรรมทั้งแบบแอโรบิกและฝึกกล้ามเนื้อ แอโรบิก: ช่วยให้หัวใจและปอดแข็งแรง เช่น วิ่ง ว่ายน้ำ ปั่นจักรยาน ฝึกกล้ามเนื้อ: เช่น ยกน้ำหนัก วิดพื้น ท่าฝึกแรงต้าน</p><br>
+                <p>3. เพิ่มการยืดเหยียดร่างกาย ฝึกยืดกล้ามเนื้อก่อนและหลังออกกำลังกาย ช่วยลดความเสี่ยงต่อการบาดเจ็บและทำให้ร่างกายยืดหยุ่น</p><br>
+                <p>4. เลือกกิจกรรมที่สนุกและเหมาะกับตัวเอง เช่น เต้น เล่นกีฬา เล่นโยคะ หรือเดินเล่นกับเพื่อน ทำให้รู้สึกสนุกและอยากทำต่อเนื่อง</p><br>
+                <p>5. ดื่มน้ำให้เพียงพอ ก่อน ระหว่าง และหลังการออกกำลังกาย เพื่อชดเชยเหงื่อและป้องกันร่างกายขาดน้ำ</p><br>
+                <p>6. ฟังร่างกายของตัวเอง ถ้าเหนื่อยมากหรือมีอาการเจ็บปวด ควรหยุดพัก หลีกเลี่ยงการฝืนออกกำลังกายหนักเกินไป</p><br>
+                <p>7. ควรออกกำลังกายในที่ปลอดภัย เลือกสถานที่ที่อากาศถ่ายเทดี เช่น สวนสาธารณะหรือในบ้าน ถ้าออกกลางแจ้ง ให้หลีกเลี่ยงช่วงแดดแรงจัด</p><br>
+              </div>
+              <button onclick="closePopup('popup_6')" style="left: 85%; top: -4%rem; background-color: red; color: white; border-radius: 20px; padding: 5px 30px; position: relative;">Close</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 7 (BMI) -->
+        <div class="bg-white/10 backdrop-blur-lg rounded-2xl border-2 border-black/50 flex flex-col items-center py-6 px-3 min-w-[180px] min-h-[260px] relative shadow-xl hover:scale-105 hover:shadow-2xl transition-all duration-300">
+          <div class="text-2xl md:text-3xl font-semibold text-white mb-1">BMI</div>
+          <img src="bmi_img.png" alt="BMI" class="h-20 mb-5 mt-2 opacity-80">
+          <div class="page-content" id="content">
+            <button onclick="openPopup('popup_7')">Details</button>
+          </div>
+          <div class="popup-overlay" id="popup_7">
+            <div class="popup-box">
+              <div class="container">
+                <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">BMI Calculator</h2>
+                <input type="number" id="weight" placeholder="Enter weight (kg)" style="color: black; display:block; ">
+                <input type="number" id="height" placeholder="Enter height (cm)" style="color: black; display: block;">
+                <button onclick="calculateBMI()" class="gimanee-btn">Calculate BMI</button>
+                <div id="output" style="margin-top: 8%; font-size: 30px; box-sizing: content-box;"></div>
+              </div>
+              <button onclick="closePopup('popup_7')" style="left: 85%; top: 23%; background-color: red; color: white; border-radius: 20px; padding: 5px 30px; position: relative;">Close</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 8 (SOS) -->
+        <div class="bg-white/10 backdrop-blur-lg rounded-2xl border-2 border-black/50 flex flex-col items-center py-6 px-3 min-w-[180px] min-h-[260px] relative shadow-xl hover:scale-105 hover:shadow-2xl transition-all duration-300">
+          <div class="text-2xl md:text-3xl font-semibold text-white mb-1">SOS</div>
+          <img src="sos_2.png" alt="Eating" class="h-20 mb-5 mt-2 opacity-80">
+          <div class="page-content" id="content">
+            <button onclick="openPopup('popup_8')">Details</button>
+          </div>
+          <div class="popup-overlay" id="popup_8">
+            <div class="popup-box">
+              <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Eating Tips</h2>
+              <div class="popup_8_content">
+                <ul class="list-disc list-inside ml-4 text-white text-base">
+                  <h3 class="text-xl font-semibold mt-4">สายด่วนแพทย์ฉุกเฉิน (EMS)</h3>
+                  <li style="color: red; font-weight: bold;">โทร. 1669</li>
+                  <li>ใช้เมื่อเกิดอุบัติเหตุ เจ็บป่วยฉุกเฉิน เรียกรถพยาบาล 24 ชั่วโมง</li>
+                  <li>เจ้าหน้าที่จะส่งรถพยาบาลฉุกเฉินจากโรงพยาบาลใกล้ที่สุด</li>
+                </ul>
+                <ul class="list-disc list-inside ml-4 text-white text-base">
+                  <h3 class="text-xl font-semibold mt-4">สายด่วนสุขภาพจิต</h3>
+                  <li style="color: red; font-weight: bold;"> โทร. 1323</li>
+                  <li>ให้คำปรึกษาด้านจิตใจ ซึมเศร้า เครียด วิตกกังวล ตลอด 24 ชั่วโมง</li>
+                </ul>
+                <ul class="list-disc list-inside ml-4 text-white text-base">
+                  <h3 class="text-xl font-semibold mt-4">กระทรวงสาธารณสุข (MOH Call Center)</h3>
+                  <li style="color: red; font-weight: bold;"> โทร. 1422</li>
+                  <li>ใช้สอบถามข้อมูลทั่วไปเรื่องสุขภาพ วัคซีน โรคติดต่อ บริการทางแพทย์</li>
+                </ul>
+              </div>
+              <button onclick="closePopup('popup_8')" style="left: 85%; top: 10%; background-color: red; color: white; border-radius: 20px; padding: 5px 30px; position: relative;">Close</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <footer class="text-center text-gray-500 mt-10 text-sm w-full">© 2025 GIMANEE</footer>
+  </div>
+
+  <script>
+    // ---- CONFIG ----
+    const PARTICLE_NUM = 90;
+    const PARTICLE_MIN_RADIUS = 2;
+    const PARTICLE_MAX_RADIUS = 6;
+    const PARTICLE_COLOR = 'rgba(162,89,230,0.22)';
+    const PARTICLE_SPEED = 0.09;
+    const SCROLL_INFLUENCE = 0.36;
+
+    // ---- Canvas Setup ----
+    const canvas = document.getElementById('bg-particle');
+    const ctx = canvas.getContext('2d');
+    let w = window.innerWidth, h = window.innerHeight;
+    function resize() {
+      w = window.innerWidth;
+      h = window.innerHeight;
+      canvas.width = w;
+      canvas.height = h;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    // ---- Particle Model ----
+    function random(min, max) { return Math.random() * (max - min) + min; }
+    const particles = [];
+    for (let i = 0; i < PARTICLE_NUM; i++) {
+      particles.push({
+        x: random(0, w),
+        y: random(0, h),
+        r: random(PARTICLE_MIN_RADIUS, PARTICLE_MAX_RADIUS),
+        dx: random(-PARTICLE_SPEED, PARTICLE_SPEED),
+        dy: random(-PARTICLE_SPEED, PARTICLE_SPEED),
+        alpha: random(0.16, 0.32)
+      });
+    }
+
+    // ---- Scroll Tracking ----
+    let lastScrollY = window.scrollY;
+    let scrollDelta = 0;
+    window.addEventListener('scroll', function () {
+      const nowScroll = window.scrollY;
+      scrollDelta = nowScroll - lastScrollY;
+      lastScrollY = nowScroll;
+    });
+
+    // ---- Animate ----
+    function draw() {
+      ctx.clearRect(0, 0, w, h);
+      for (const p of particles) {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, 2 * Math.PI, false);
+        ctx.fillStyle = PARTICLE_COLOR.replace('0.22', p.alpha.toFixed(2));
+        ctx.shadowColor = "#a259e6";
+        ctx.shadowBlur = 24;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+        p.x += p.dx;
+        p.y += p.dy;
+        p.y += scrollDelta * SCROLL_INFLUENCE;
+        if (p.x - p.r < 0 || p.x + p.r > w) p.dx *= -1;
+        if (p.y - p.r < 0 || p.y + p.r > h) p.dy *= -1;
+      }
+      scrollDelta *= 0.87;
+      requestAnimationFrame(draw);
+    }
+    draw();
+
+    // ---- Top Bar Fade on Scroll ----
+    const topbar = document.getElementById('topbar');
+    let lastFade = 1;
+    window.addEventListener('scroll', function () {
+      const fadeStart = 0;
+      const fadeEnd = 180;
+      let y = window.scrollY;
+      let alpha = 1;
+      if (y > fadeStart) {
+        alpha = Math.max(0, 1 - (y - fadeStart) / (fadeEnd - fadeStart));
+      }
+      alpha = Math.max(0, Math.min(1, alpha));
+      if (Math.abs(lastFade - alpha) > 0.015) {
+        topbar.style.opacity = alpha.toFixed(2);
+        lastFade = alpha;
+      }
+    });
+  </script>
+</body>
+</html>

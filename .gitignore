@@ -1,0 +1,27 @@
+# ไม่เอา virtual environment
+venv/
+ENV/
+env/
+.venv/
+
+# ไม่เอาไฟล์ library จาก PyTorch หรือ DLL ต่าง ๆ
+*.dll
+*.lib
+*.pdb
+
+# ไม่เอาไฟล์ที่สร้างอัตโนมัติ
+__pycache__/
+*.py[cod]
+*.so
+*.ipynb_checkpoints/
+
+# ไม่เอาไฟล์ config editor
+.vscode/
+.idea/
+
+# ไฟล์ที่เก็บ Dependency
+Pipfile.lock
+poetry.lock
+
+# Jupyter Notebook output
+*.checkpoint
