@@ -16,8 +16,8 @@ for notes on deploying the project on a live system.
 ### Prerequisites
 
 Requirements for the software and other tools to build, test and push 
-- [Example 1](https://www.example.com)
-- [Example 2](https://www.example.com)
+- [Python 3.10.0](https://www.python.org/downloads/)
+- [CUDA 12.1 (optional)](https://developer.nvidia.com/cuda-toolkit)
 
 ### Installing
 
