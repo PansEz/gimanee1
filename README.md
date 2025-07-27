@@ -3,11 +3,11 @@
 **unofficial version** // 
 **this is for school/personal project**
 
-Gimanee Health Care Chatbot is a Thai-language AI chatbot that answers basic health questions. Trained on 35,000+ Q&A pairs, it helps users access reliable health info easily via a offline website.
+//Also my first project !//
 
+Gimanee is Health Care website with Thai-language AI chatbot that answers health questionsand give basic health advices. Trained on 35,000+ Q&A pairs between doctors and patients collected from verified health websites etc Moh-prompt, THO, panthip health websites, hugging face, it helps users access reliable health info easily via a offline website.
 
 <img width="1907" height="937" alt="Image" src="https://github.com/user-attachments/assets/43b4a8c9-087c-470a-b7bf-d652be48ff75" />
-
 
 ## Getting Started
 
