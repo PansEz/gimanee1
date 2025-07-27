@@ -1,6 +1,6 @@
 # About 
 
-**unofficial version**
+**unofficial version** // 
 **this is for school/personal project**
 
 Gimanee Health Care Chatbot is a Thai-language AI chatbot that answers basic health questions. Trained on 35,000+ Q&A pairs, it helps users access reliable health info easily via a offline website.
@@ -36,7 +36,7 @@ Install library
 
 ## Running the tests
 
-First of all, Download <ckpt.pt> from our github put it in syrup, open the website (from .html (in syrup)), open terminal tab (use cmd) > path to syrup
+First of all, Download <ckpt.pt> from our github put it in syrup, open the website (from GIMANEE.html (in syrup)), open terminal tab (use cmd) > path to syrup
 then, run command
 
     python syrup.py
@@ -48,8 +48,6 @@ then, run command
 ## Authors
 
   - **Soroj Sungkhanun**
-    
 
-  - Hat tip to anyone whose code is used
-  - Inspiration
-  - etc
+
+7/27/2025 last updated
